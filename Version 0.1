@@ -1,0 +1,453 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+struct student_info {
+    int s_no;
+    char name[20];
+    int age;
+    char sex[10];
+    char group[30];
+    char Cscore[30];
+    char Mathscore[30];
+    struct student_info *next;
+}student_info;
+
+void menue(void);
+int info_input(void);
+int info_review(void);
+int info_search(void);
+
+int main(void)
+{
+    menue();
+
+    return 0;
+}
+
+void menue(void)
+{
+    int choose;
+    printf("SIAE-CAUC\n"); 
+    printf("\n"); 
+    printf("___________________________________________________________________________________________________|\n");
+	printf("|                                                                                                  |\n");
+    printf("|                               Student Information Management System                              |\n");
+	printf("|                                                                                                  |\n");   
+    printf("|************************************************************************************************* |\n");
+    printf("|                 Function 1:        Enter student information                                     |\n");
+    printf("|                                                                                                  |\n");
+    printf("|                 Function 2:        Browser student information                                   |\n");
+    printf("|                                                                                                  |\n");
+    printf("|                 Function 3:        Search student information                                    |\n");   
+	printf("|                                                                                                  |\n");
+    printf("|                 Function 4:        Delete or modify student information                          |\n");
+	printf("|                                                                                                  |\n");
+	printf("|                 Function 0:          EXIT THIS SYSTEM                                            |\n");
+	printf("|                                                                                                  |\n");
+    printf("|_________________________________________________________________Ver_0.9__________By 欧阳俊杰_____|\n"); 
+
+    printf("Enter the number of the function which you want to achieve (0~~4): ");
+    scanf("%d", &choose);
+
+    switch (choose) {
+        case 0:
+            exit(0);
+            break;
+        case 1:
+            info_input();
+            break;
+        case 2:
+            info_review();
+            break;
+        case 3:
+            info_search();
+            break;
+        case 4:
+		    info_change();
+			break;
+    }
+
+    while (choose > 4 || choose < 1) {
+        printf("You entered an faut option, please re-enter: ");
+        scanf("%d", &choose);
+    }
+
+}
+
+
+int creat_list(void)
+{
+    return 0;
+}
+
+//  Student information entry //
+int info_input(void)
+{
+    struct student_info *head = NULL, *rear = NULL;
+    FILE *fp;
+    int flag = 1;
+
+    head = (struct student_info *)malloc(sizeof(struct student_info));
+    rear = head;
+
+    while (flag) {
+        struct student_info *stu = NULL;
+
+        stu = (struct student_info *)malloc(sizeof(struct student_info));
+
+        fp = fopen("stuinfo.txt", "a+b");
+        fseek(fp, sizeof(struct student_info), 2);
+
+
+        printf("-----Please enter the student's information in turn-----\n");
+
+        printf("Student's number: ");
+        scanf("%d", &stu->s_no);
+
+        printf("Name:");
+        scanf("%s", stu->name);
+
+        printf("Age: ");
+        scanf("%d", &stu->age);
+
+        printf("Sex: ");
+        scanf("%s", stu->sex);
+
+
+        printf("Class: ");
+        scanf("%s", stu->group);
+
+        printf("the grade of C-language: ");
+        scanf("%s", stu->Cscore);
+
+        printf("the grade of Math: ");
+        scanf("%s", stu->Mathscore);
+
+        fwrite(stu, sizeof(struct student_info), 1, fp);
+
+        rear->next = stu;
+        rear = stu;
+
+        fclose(fp);
+
+        printf("Enter again:Tap 1; Return the Up menu:Tap 2; Exit:Tap 0");
+        scanf("%d", &flag);
+
+        if (flag == 0) {
+            exit(0);
+        }
+
+        if (flag == 1) {
+            continue;
+        }
+
+        if (flag == 2) {
+        	system("cls");
+            menue();
+            break;
+        }
+    }
+
+    rear->next = NULL;
+
+    return 0;
+}
+
+
+// 2. Brower the information
+int info_review(void)
+{
+    struct student_info stu;
+
+    int ret = 1;
+    int flag = 0;
+
+    FILE *fp = fopen("stuinfo.txt", "rb");
+
+
+
+    if (fp == NULL) {
+        perror("fopen");
+        exit(0);
+    }
+
+    while (ret != 0) {
+        ret = fread(&stu, sizeof(struct student_info), 1, fp);
+        printf("___________________________________________________________________________________________________|\n");
+        printf("|                                                                                                  |\n");
+        printf("|     Number     Name     Age     Sex     Gourp     C-score     Math-Score                         |\n");
+        printf("     %d     %s     %d     %s     %s     %s     %s                                  |\n", stu.s_no, stu.name, stu.age, stu.sex, stu.group,stu.Cscore, stu.Mathscore);
+        printf("___________________________________________________________________________________________________|\n");
+    }
+
+    fclose(fp);
+    printf("------------------------------------------------------------------------------------------------------\n");
+
+    printf("Return the up menu:Tap1; Exit:Tap 0");
+    scanf("%d", &flag);
+
+    if (flag == 0) {
+        exit(0);
+    }
+
+    if (flag == 1) {
+        system("cls");
+        menue();
+        exit(0);
+    }
+
+    return 0;
+}
+
+
+// Search the information// 
+
+int info_search(void)
+{
+	 system("cls");
+    printf("___________________________________________________________________________________________________|\n");
+	printf("|                                                                                                  |\n");
+    printf("|                 Student Information Management System：Query interface                           |\n");
+	printf("|                                                                                                  |\n");   
+    printf("|************************************************************************************************* |\n");
+    printf("|                 Function 1:      Search student information by Name                              |\n");
+    printf("|                                                                                                  |\n");
+    printf("|                 Function 2:      Search student information by number                            |\n");
+    printf("|__________________________________________________________________________________________________|\n");
+
+
+    struct student_info *stu1 = NULL, *stu2 = NULL;
+    stu1 = (struct student_info *)malloc(sizeof(struct student_info));
+    stu2 = (struct student_info *)malloc(sizeof(struct student_info));
+
+    int ret = 1, i = 0, flag = 1;
+
+    FILE *fp = fopen("stuinfo.txt", "rb");
+
+    printf("=====Search by Name:Tap 1;  Search by Number:Tap 2; Return the main menu Tap:0=====\n");
+    scanf("%d", &i);
+
+    while (flag) {
+        if (i == 1) {
+            printf("Enter the student's Name: ");
+            scanf("%s", stu1->name);
+
+            do {
+                if (ret == 0) {
+                    printf("Don't exist this student\n");
+                	system("pause");
+                	system("cls");
+                    info_search() ;
+                }
+                ret = fread(stu2, sizeof(struct student_info), 1, fp);
+            } while (strcmp(stu1->name, stu2->name));
+
+            printf("The information that you want to search: \n");
+            printf("___________________________________________________________________________________________________|\n");
+            printf("|                                                                                                  |\n");
+            printf("|     Number     Name     Age     Sex     Gourp     C-score     Math-Score                         |\n");
+            printf("     %d     %s     %d     %s     %s     %s     %s                                  |\n", stu2->s_no, stu2->name, stu2->age, stu2->sex, stu2->group, stu2->Cscore, stu2->Mathscore);
+            printf("|__________________________________________________________________________________________________|\n");
+        }
+
+        if (i == 2) {
+            printf("Enter the Number of student: ");
+            scanf("%d", stu1->s_no);
+
+            do {
+                if (ret == 0) {
+                    printf("Don't exist this student\n");
+                    exit(0);
+                }
+                ret = fread(stu2, sizeof(struct student_info), 1, fp);
+            } while (stu2->s_no != stu1->s_no);
+
+            printf("The information that you want to search: \n");
+             printf("___________________________________________________________________________________________________|\n");
+            printf("|                                                                                                  |\n");
+            printf("|     Number     Name     Age     Sex     Gourp     C-score     Math-Score                         |\n");
+            printf("     %d     %s     %d     %s     %s     %s     %s                                  |\n", stu2->s_no, stu2->name, stu2->age, stu2->sex, stu2->group, stu2->Cscore, stu2->Mathscore);
+            printf("|__________________________________________________________________________________________________|\n");
+        }
+        if(i==0){
+	     	system("cls");
+            menue();
+		}
+        printf("=====Search again:Tap 1，Return the up menu:Tap 2=====\n");
+        scanf("%d", &flag);
+
+        if (flag == 1)
+            continue;
+        if (flag == 2) {
+        	system("cls");
+            menue();
+            break;
+        }
+
+	}
+
+    return 0;
+
+}
+
+struct student_info *read(struct student_info *head)
+{
+    struct student_info *p1,*p2;
+    FILE *fp;
+    if((fp=fopen("stuinfo.txt","rb+"))==NULL)
+    {
+        printf("Could't open the file！\n");
+        return head;
+    }
+    while(!feof(fp))
+    {
+        if((p1=(struct student_info *)malloc(sizeof(struct student_info)))==NULL)
+        {
+            printf("Faut！\n");
+            fclose(fp);
+            return head;
+        }
+        if(fread(p1,sizeof(struct student_info),1,fp)!=1)
+        {
+            free(p1);
+            break;
+        }
+        if(head==NULL)
+            head=p2=p1;
+        else{p2->next=p1;p2=p1;}
+    }
+    fclose(fp);
+    return head;
+}
+
+void save(struct student_info *head)
+{
+    FILE *fp;
+    struct student_info *p;
+    if((fp=fopen("stuinfo.txt","wb"))==NULL)
+        {
+            printf("Wrong,couldn't open file'！\n");
+        }
+    p=head;
+    while(p!=NULL)
+        {
+            if(fwrite(p,sizeof(struct student_info),1,fp)!=1)
+            {
+                printf("Couldn't enter the information'\n");
+                fclose(fp);
+                return;
+            }
+            p=p->next; 
+        }
+    fclose(fp); 
+    printf("Save successful!\n");
+}
+
+
+// Delete or modify student's information
+int info_change(void)
+{ int flag;
+   printf("Delete the information:Tap 1; modify the information:Tap 2\n");
+   scanf("%d", &flag);
+        if (flag==1)
+              info_delete();
+    while (flag!=1)
+	{
+        printf("Entered a faut number,please enter again: ");
+        scanf("%d", &flag);
+   }
+      if (flag==2)
+              info_modify();
+}
+
+//Delete student's information
+int info_delete()
+{
+    struct student_info *p1,*p2,*head;
+    char str_name[20];
+    printf("Please enter the name of that student:\n");
+    scanf("%s",str_name);
+    p1=read(head);
+    p2=p1->next;
+    head=p1;
+    if(p2==NULL)
+    {
+        if(strcmp(p1->name,str_name)==0)
+           {save(p2);printf("You delete Successful!");return 0;}
+        else printf("Don't have this person!\n");
+    }
+    while(p2!=NULL)
+    {
+        if(strcmp(p1->name,str_name)==0)
+        {
+            save(p2);
+            printf("You dele Successful!");
+            return 0;
+        }
+        if(strcmp(p2->name,str_name)==0)
+        {
+            p1->next=p2->next;
+            save(head);
+            printf("You dele Successful!");
+            return 0;
+        }
+        p2 = p2->next;
+        p1 = p1->next;
+    }
+    return 0;
+}
+
+//modify student's information
+int info_modify()
+{
+    struct student_info *p1,*p2,*head;
+    char str_name[20]; 
+    printf("Please enter the name of modified student:");
+    scanf("%s",str_name);
+    p1=read(head);
+    p2=p1->next;
+    head=p1;
+    if(p2==NULL)
+    {
+        if(strcmp(p1->name,str_name)==0)
+        {
+            printf("___________________________________________________________________________________________________|\n");
+            printf("|                                                                                                  |\n");
+            printf("|     Number     Name     Age     Sex     Gourp     C-score     Math-Score                         |\n");
+            scanf("     %d     %s     %d     %s     %s     %s     %s                                  |",&p1->s_no,p1->name,&p1->age,p1->sex,p1->group,p1->Cscore,p1->Mathscore);
+            printf("|__________________________________________________________________________________________________|\n");
+            save(head);
+            return 0;
+        }
+        else printf("There is no %s student!",str_name);
+    }
+    while(p2!=NULL)
+        {
+            if(strcmp(p1->name,str_name)==0)
+            {
+            printf("___________________________________________________________________________________________________|\n");
+            printf("|                                                                                                  |\n");
+            printf("|     Number     Name     Age     Sex     Gourp     C-score     Math-Score                         |\n");
+             scanf("|     %d     %s     %d     %s     %s     %s     %s                                  |",&p1->s_no,p1->name,&p1->age,p1->sex,p1->group,p1->Cscore,p1->Mathscore);
+            printf("|__________________________________________________________________________________________________|\n");
+                save(head);
+                return 0;
+            }
+            if(strcmp(p2->name,str_name)==0)
+            {
+            printf("___________________________________________________________________________________________________|\n");
+            printf("|                                                                                                  |\n");
+            printf("|     Number     Name     Age     Sex     Gourp     C-score     Math-Score                         |\n");
+             scanf("|     %d     %s     %d     %s     %s     %s     %s                                  |",&p2->s_no,p2->name,&p2->age,p2->sex,p2->group,p2->Cscore,p2->Mathscore);
+            printf("|__________________________________________________________________________________________________|\n");
+                    save(head);
+                    return 0;
+            }
+            p2 = p2->next;
+            p1 = p1->next;
+    }
+    return 0;
+}
+
+
